@@ -1,0 +1,2 @@
+# scgovthssbiranarasinghpur
+Higher Secondary School 
