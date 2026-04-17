@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Greenfield Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== CSS VARIABLES ===== */
+:root {
+  --navy: #0f1f3d;
+  --gold: #c8a94e;
+  --gold-light: #e8d08a;
+  --cream: #faf8f3;
+  --white: #ffffff;
+  --grey: #6b7280;
+  --light-grey: #f3f4f6;
+  --danger: #dc2626;
+  --success: #16a34a;
+  --border: #e5e7eb;
+  --shadow: 0 4px 24px rgba(15,31,61,0.10);
+  --shadow-lg: 0 12px 48px rgba(15,31,61,0.16);
+  --radius: 12px;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--cream);
+  color: var(--navy);
+  overflow-x: hidden;
+}
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+button { cursor: pointer; font-family: var(--font-body); }
+input, select, textarea { font-family: var(--font-body); }
+
+/* ===== UTILITY ===== */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 80px 0; }
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+.section-subtitle {
+  color: var(--grey);
+  font-size: 1.05rem;
+  margin-bottom: 48px;
+  max-width: 560px;
+}
+.gold-line {
+  width: 56px; height: 4px;
+  background: var(--gold);
+  margin-bottom: 16px;
+  border-radius: 2px;
+}
+.badge {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--navy);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 28px;
+  border-radius: var(--radius);
+  font-weight: 600; font-size: 0.95rem;
+  border: none; transition: all 0.2s;
+}
+.btn-primary { background: var(--gold); color: var(--navy); }
+.btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: var(--shadow); }
+.btn-outline { background: transparent; color: var(--navy); border: 2px solid var(--navy); }
+.btn-outline:hover { background: var(--navy); color: var(--white); }
+.btn-navy { background: var(--navy); color: var(--white); }
+.btn-navy:hover { background: #1a3560; transform: translateY(-1px); box-shadow: var(--shadow); }
+.btn-sm { padding: 8px 18px; font-size: 0.85rem; }
+.hidden { display: none !important; }
+
+/* ===== LOADING SPINNER ===== */
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 40px auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== TOAST ===== */
+#toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  background: var(--navy); color: var(--white);
+  padding: 14px 24px; border-radius: var(--radius);
+  font-size: 0.9rem; font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(100px); opacity: 0;
+  transition: all 0.3s; pointer-events: none;
+}
+#toast.show { transform: translateY(0); opacity: 1; }
+#toast.success { background: var(--success); }
+#toast.error { background: var(--danger); }
+
+/* ===== NAVBAR ===== */
+#navbar {
+  position: sticky; top: 0; z-index: 1000;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transition: box-shadow 0.3s;
+}
+#navbar.scrolled { box-shadow: var(--shadow); }
+.nav-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 68px; gap: 16px;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--font-display); font-size: 1.35rem; font-weight: 700;
+  color: var(--navy);
+}
+.logo-icon {
+  width: 40px; height: 40px;
+  background: var(--navy);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold); font-size: 1.2rem;
+}
+.nav-links {
+  display: flex; align-items: center; gap: 4px;
+  list-style: none;
+}
+.nav-links a {
+  padding: 8px 14px; border-radius: 8px;
+  font-size: 0.9rem; font-weight: 500;
+  color: var(--navy); transition: all 0.2s;
+}
+.nav-links a:hover, .nav-links a.active { background: var(--light-grey); color: var(--navy); }
+.nav-links a.protected { position: relative; }
+.nav-links a.protected::after {
+  content: '🔒'; font-size: 0.65rem;
+  position: absolute; top: 4px; right: 4px;
+}
+.nav-right { display: flex; align-items: center; gap: 10px; }
+#loginBtn, #logoutBtn { font-size: 0.85rem; }
+.hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: 4px; }
+.hamburger span { width: 22px; height: 2px; background: var(--navy); border-radius: 2px; transition: all 0.3s; }
+
+/* ===== MOBILE NAV ===== */
+#mobileMenu {
+  display: none; position: fixed; top: 68px; left: 0; right: 0; bottom: 0;
+  background: var(--white); z-index: 999; overflow-y: auto;
+  padding: 24px;
+}
+#mobileMenu.open { display: block; }
+#mobileMenu ul { list-style: none; }
+#mobileMenu ul li a {
+  display: block; padding: 14px 0;
+  font-size: 1.1rem; font-weight: 500;
+  border-bottom: 1px solid var(--border);
+  color: var(--navy);
+}
+
+/* ===== PAGES ===== */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ===== HOME PAGE ===== */
+#hero {
+  position: relative; overflow: hidden;
+  min-height: 92vh;
+  background: linear-gradient(135deg, var(--navy) 0%, #1a3560 60%, #243d72 100%);
+  display: flex; align-items: center;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(ellipse at 70% 50%, rgba(200,169,78,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(200,169,78,0.08) 0%, transparent 50%);
+}
+.hero-grid {
+  position: absolute; inset: 0; opacity: 0.04;
+  background-image: linear-gradient(var(--white) 1px, transparent 1px), linear-gradient(90deg, var(--white) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.hero-content {
+  position: relative; z-index: 2;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center;
+  padding: 80px 0;
+}
+.hero-text { color: var(--white); }
+.hero-text .badge { background: rgba(200,169,78,0.2); color: var(--gold-light); border: 1px solid rgba(200,169,78,0.3); }
+.hero-text h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+.hero-text h1 span { color: var(--gold); }
+.hero-text p { font-size: 1.1rem; color: rgba(255,255,255,0.75); line-height: 1.7; margin-bottom: 36px; max-width: 480px; }
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+.hero-image-wrap {
+  position: relative;
+}
+.hero-img-frame {
+  border-radius: 24px; overflow: hidden;
+  border: 3px solid rgba(200,169,78,0.3);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, #1e3a6e 0%, #2d5299 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-img-placeholder {
+  text-align: center; color: rgba(255,255,255,0.5);
+}
+.hero-img-placeholder .icon { font-size: 5rem; margin-bottom: 12px; }
+.hero-img-placeholder p { font-size: 0.9rem; }
+.hero-stat-row {
+  display: flex; gap: 32px; margin-top: 24px;
+}
+.hero-stat { text-align: center; }
+.hero-stat .num { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--gold); }
+.hero-stat .lbl { font-size: 0.78rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* Announcements */
+.announcements-strip {
+  background: var(--navy); color: var(--white); padding: 16px 0;
+  overflow: hidden;
+}
+.ann-scroll { display: flex; gap: 48px; white-space: nowrap; animation: scroll-left 30s linear infinite; }
+.ann-scroll span { font-size: 0.88rem; color: rgba(255,255,255,0.8); }
+.ann-scroll span strong { color: var(--gold); margin-right: 8px; }
+@keyframes scroll-left { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* Welcome */
+.welcome-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center;
+}
+.welcome-img-wrap {
+  border-radius: 20px; overflow: hidden;
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, var(--light-grey) 0%, #dde4f0 100%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.welcome-img-wrap::after {
+  content: ''; position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(15,31,61,0.05), transparent);
+  border-radius: 20px;
+}
+.img-placeholder-content { text-align: center; color: var(--grey); }
+.img-placeholder-content .icon { font-size: 4rem; margin-bottom: 8px; }
+.principal-quote {
+  border-left: 4px solid var(--gold); padding-left: 20px;
+  font-style: italic; color: var(--grey); margin: 24px 0;
+  font-size: 1.05rem; line-height: 1.7;
+}
+.principal-name { font-weight: 700; color: var(--navy); }
+
+/* Announcements Cards */
+.ann-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.ann-card {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--border); padding: 24px;
+  transition: all 0.2s;
+}
+.ann-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.ann-card-tag {
+  display: inline-block; background: var(--light-grey); color: var(--navy);
+  font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px;
+}
+.ann-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+.ann-card p { font-size: 0.88rem; color: var(--grey); line-height: 1.6; }
+.ann-card-date { font-size: 0.78rem; color: var(--grey); margin-top: 12px; }
+
+/* ===== ABOUT ===== */
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+.about-text p { color: var(--grey); line-height: 1.8; margin-bottom: 16px; }
+.values-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
+.value-card {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--border); padding: 16px;
+}
+.value-icon { font-size: 1.6rem; margin-bottom: 8px; }
+.value-card h4 { font-size: 0.92rem; font-weight: 600; margin-bottom: 4px; }
+.value-card p { font-size: 0.82rem; color: var(--grey); }
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 32px; }
+.stat-box {
+  background: var(--navy); color: var(--white); border-radius: var(--radius);
+  padding: 24px; text-align: center;
+}
+.stat-box .num { font-family: var(--font-display); font-size: 2.2rem; font-weight: 700; color: var(--gold); }
+.stat-box .lbl { font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-top: 4px; }
+
+/* ===== FACULTY ===== */
+.faculty-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; }
+.faculty-card {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--border); overflow: hidden;
+  transition: all 0.25s; text-align: center;
+}
+.faculty-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.faculty-img {
+  width: 100%; aspect-ratio: 1;
+  background: linear-gradient(135deg, #dde4f0, #c8d3e8);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 4rem; color: var(--navy); position: relative; overflow: hidden;
+}
+.faculty-img img {
+  width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0;
+}
+.faculty-body { padding: 20px; }
+.faculty-body h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+.faculty-body p { font-size: 0.85rem; color: var(--grey); }
+.subject-badge {
+  display: inline-block; background: rgba(200,169,78,0.15);
+  color: #8b6914; font-size: 0.75rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 20px; margin-top: 8px;
+}
+
+/* ===== CLASSES ===== */
+.classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+.class-card {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--border); padding: 24px 16px;
+  text-align: center; transition: all 0.2s; cursor: pointer;
+}
+.class-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--gold); }
+.class-num { font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; color: var(--navy); }
+.class-label { font-size: 0.85rem; color: var(--grey); margin-top: 4px; }
+.class-count { font-size: 0.78rem; color: var(--gold); font-weight: 600; margin-top: 8px; }
+
+/* ===== LOGIN PAGE ===== */
+#page-login {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--navy) 0%, #1a3560 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.login-box {
+  background: var(--white); border-radius: 20px;
+  padding: 48px; width: 100%; max-width: 420px;
+  box-shadow: var(--shadow-lg);
+}
+.login-logo { text-align: center; margin-bottom: 32px; }
+.login-logo .icon { font-size: 3rem; margin-bottom: 8px; }
+.login-logo h2 { font-family: var(--font-display); font-size: 1.6rem; color: var(--navy); }
+.login-logo p { color: var(--grey); font-size: 0.9rem; margin-top: 4px; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-size: 0.88rem; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 12px 16px;
+  border: 2px solid var(--border); border-radius: 10px;
+  font-size: 0.95rem; color: var(--navy);
+  transition: border-color 0.2s; background: var(--white);
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none; border-color: var(--navy);
+}
+.form-group textarea { resize: vertical; min-height: 100px; }
+.login-footer { text-align: center; margin-top: 20px; font-size: 0.82rem; color: var(--grey); }
+.error-msg { color: var(--danger); font-size: 0.85rem; margin-top: 8px; }
+.demo-hint {
+  background: var(--light-grey); border-radius: 8px; padding: 12px 16px;
+  font-size: 0.82rem; color: var(--grey); margin-bottom: 20px;
+}
+.demo-hint strong { color: var(--navy); }
+
+/* ===== PROTECTED PAGES ===== */
+.protected-header {
+  background: var(--white); border-bottom: 1px solid var(--border); padding: 32px 0;
+}
+.protected-header h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; }
+.search-bar {
+  display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap;
+}
+.search-bar input {
+  flex: 1; min-width: 200px; padding: 11px 16px;
+  border: 2px solid var(--border); border-radius: 10px;
+  font-size: 0.95rem; transition: border-color 0.2s;
+}
+.search-bar input:focus { outline: none; border-color: var(--navy); }
+.data-table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; background: var(--white); }
+thead th {
+  background: var(--navy); color: var(--white);
+  padding: 14px 18px; text-align: left;
+  font-size: 0.85rem; font-weight: 600;
+  letter-spacing: 0.03em;
+}
+tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--light-grey); }
+tbody td { padding: 14px 18px; font-size: 0.9rem; color: var(--navy); }
+.rank-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
+  font-size: 0.78rem; font-weight: 600;
+}
+.rank-a { background: rgba(22,163,74,0.12); color: var(--success); }
+.rank-b { background: rgba(200,169,78,0.15); color: #8b6914; }
+.rank-c { background: rgba(107,114,128,0.12); color: var(--grey); }
+.rank-f { background: rgba(220,38,38,0.12); color: var(--danger); }
+.no-data { text-align: center; padding: 60px; color: var(--grey); }
+.no-data .icon { font-size: 3rem; margin-bottom: 12px; }
+
+/* ===== ADMISSION FORM ===== */
+.admission-form-wrap {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--border); padding: 40px;
+  max-width: 700px;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.submit-result {
+  margin-top: 16px; padding: 14px 20px;
+  border-radius: 10px; font-size: 0.9rem;
+}
+.submit-result.success { background: rgba(22,163,74,0.1); color: var(--success); }
+.submit-result.error { background: rgba(220,38,38,0.1); color: var(--danger); }
+
+/* ===== CONTACT ===== */
+.contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; }
+.contact-info-card {
+  background: var(--navy); color: var(--white);
+  border-radius: 20px; padding: 40px;
+}
+.contact-info-card h3 { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 24px; }
+.contact-item { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 24px; }
+.contact-item .icon {
+  width: 44px; height: 44px; min-width: 44px;
+  background: rgba(200,169,78,0.15); border: 1px solid rgba(200,169,78,0.3);
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+}
+.contact-item .text { font-size: 0.9rem; color: rgba(255,255,255,0.8); }
+.contact-item .text strong { display: block; color: var(--white); font-weight: 600; margin-bottom: 2px; }
+.contact-form-wrap { background: var(--white); border-radius: 20px; padding: 40px; border: 1px solid var(--border); }
+
+/* ===== GALLERY ===== */
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.gallery-item {
+  border-radius: var(--radius); overflow: hidden;
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, #dde4f0, #c8d3e8);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem; color: var(--navy); opacity: 0.7;
+  transition: all 0.2s; cursor: pointer;
+}
+.gallery-item:hover { transform: scale(1.02); opacity: 1; box-shadow: var(--shadow); }
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--navy); color: rgba(255,255,255,0.75);
+  padding: 60px 0 28px;
+}
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+.footer-brand { }
+.footer-brand .logo { display: flex; align-items: center; gap: 10px; color: var(--white); font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; margin-bottom: 14px; }
+.footer-brand p { font-size: 0.88rem; line-height: 1.7; }
+.footer-col h4 { color: var(--white); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 10px; }
+.footer-col ul li a { font-size: 0.88rem; color: rgba(255,255,255,0.65); transition: color 0.2s; }
+.footer-col ul li a:hover { color: var(--gold); }
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.1); padding-top: 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.82rem; flex-wrap: wrap; gap: 12px;
+}
+.footer-bottom a { color: var(--gold); }
+
+/* ===== ADMIN DASHBOARD ===== */
+.admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-bottom: 40px; }
+.admin-stat {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--border); padding: 24px;
+  display: flex; align-items: center; gap: 16px;
+}
+.admin-stat .icon {
+  width: 52px; height: 52px;
+  background: linear-gradient(135deg, var(--navy), #1a3560);
+  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+}
+.admin-stat .info .num { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: var(--navy); }
+.admin-stat .info .lbl { font-size: 0.82rem; color: var(--grey); }
+.sheet-setup {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--border); padding: 28px; margin-bottom: 24px;
+}
+.sheet-setup h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.sheet-setup p { font-size: 0.88rem; color: var(--grey); margin-bottom: 14px; line-height: 1.6; }
+.sheet-setup input {
+  width: 100%; padding: 11px 16px;
+  border: 2px solid var(--border); border-radius: 10px;
+  font-size: 0.9rem; margin-bottom: 12px;
+}
+.sheet-setup input:focus { outline: none; border-color: var(--navy); }
+.config-status { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; margin-top: 8px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.dot.connected { background: var(--success); }
+.dot.disconnected { background: var(--danger); }
+code {
+  background: var(--light-grey); padding: 2px 6px; border-radius: 4px;
+  font-size: 0.82rem; font-family: monospace; color: var(--navy);
+}
+pre {
+  background: var(--navy); color: #a8f0a0; padding: 20px; border-radius: var(--radius);
+  font-size: 0.82rem; overflow-x: auto; line-height: 1.6; margin-top: 12px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .hero-content { grid-template-columns: 1fr; }
+  .hero-image-wrap { display: none; }
+  .welcome-grid, .about-grid, .contact-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .section { padding: 56px 0; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .hero-stat-row { gap: 20px; }
+  .values-list { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .login-box { padding: 32px 24px; }
+  .admission-form-wrap { padding: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== TOAST ===== -->
+<div id="toast"></div>
+
+<!-- ===== NAVBAR ===== -->
+<nav id="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo" onclick="showPage('home')">
+        <div class="logo-icon">🏫</div>
+        <span>Greenfield Academy</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#" onclick="showPage('home')" data-page="home">Home</a></li>
+        <li><a href="#" onclick="showPage('about')" data-page="about">About</a></li>
+        <li><a href="#" onclick="showPage('faculty')" data-page="faculty">Faculty</a></li>
+        <li><a href="#" onclick="showPage('classes')" data-page="classes">Classes</a></li>
+        <li><a href="#" onclick="requireLogin('students')" data-page="students" class="protected">Students</a></li>
+        <li><a href="#" onclick="requireLogin('results')" data-page="results" class="protected">Results</a></li>
+        <li><a href="#" onclick="requireLogin('admissions')" data-page="admissions" class="protected">Admissions</a></li>
+        <li><a href="#" onclick="showPage('gallery')" data-page="gallery">Gallery</a></li>
+        <li><a href="#" onclick="showPage('contact')" data-page="contact">Contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="btn btn-primary btn-sm" id="loginBtn" onclick="showPage('login')">🔑 Login</button>
+        <button class="btn btn-outline btn-sm hidden" id="logoutBtn" onclick="logout()">Logout</button>
+        <button class="hamburger" id="hamburger" onclick="toggleMobile()">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div id="mobileMenu">
+  <ul>
+    <li><a href="#" onclick="showPage('home');closeMobile()">🏠 Home</a></li>
+    <li><a href="#" onclick="showPage('about');closeMobile()">📚 About</a></li>
+    <li><a href="#" onclick="showPage('faculty');closeMobile()">👩‍🏫 Faculty</a></li>
+    <li><a href="#" onclick="showPage('classes');closeMobile()">🎓 Classes</a></li>
+    <li><a href="#" onclick="requireLogin('students');closeMobile()">👥 Students 🔒</a></li>
+    <li><a href="#" onclick="requireLogin('results');closeMobile()">📊 Results 🔒</a></li>
+    <li><a href="#" onclick="requireLogin('admissions');closeMobile()">📝 Admissions 🔒</a></li>
+    <li><a href="#" onclick="showPage('gallery');closeMobile()">🖼️ Gallery</a></li>
+    <li><a href="#" onclick="showPage('contact');closeMobile()">📬 Contact</a></li>
+  </ul>
+</div>
+
+<!-- ============================= -->
+<!-- PAGE: HOME                    -->
+<!-- ============================= -->
+<div class="page active" id="page-home">
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <span class="badge">Est. 1985 · Excellence in Education</span>
+          <h1>Shaping <span>Futures</span>,<br>Building Leaders</h1>
+          <p>Greenfield Academy provides world-class education from Classes 1 to 12, nurturing young minds through academics, arts, and character development.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" onclick="requireLogin('admissions')">Apply for Admission</button>
+            <button class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,0.4);" onclick="showPage('about')">Learn More</button>
+          </div>
+          <div class="hero-stat-row">
+            <div class="hero-stat"><div class="num">2,400+</div><div class="lbl">Students</div></div>
+            <div class="hero-stat"><div class="num">120+</div><div class="lbl">Faculty</div></div>
+            <div class="hero-stat"><div class="num">98%</div><div class="lbl">Pass Rate</div></div>
+            <div class="hero-stat"><div class="num">40yr</div><div class="lbl">Legacy</div></div>
+          </div>
+        </div>
+        <div class="hero-image-wrap">
+          <div class="hero-img-frame">
+            <div class="hero-img-placeholder">
+              <div class="icon">🏫</div>
+              <p>School Building Photo<br><small>Replace with actual image</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Announcements Ticker -->
+  <div class="announcements-strip">
+    <div class="ann-scroll" id="annTicker">
+      <span><strong>📢 Notice:</strong> Annual Sports Day on Dec 15, 2025</span>
+      <span><strong>📝 Exam:</strong> Class 10 & 12 Pre-boards from Jan 6</span>
+      <span><strong>🎓 Result:</strong> Mid-term results declared – Check portal</span>
+      <span><strong>📅 Holiday:</strong> Winter break Dec 24 – Jan 4</span>
+      <span><strong>📢 Notice:</strong> Annual Sports Day on Dec 15, 2025</span>
+      <span><strong>📝 Exam:</strong> Class 10 & 12 Pre-boards from Jan 6</span>
+      <span><strong>🎓 Result:</strong> Mid-term results declared – Check portal</span>
+      <span><strong>📅 Holiday:</strong> Winter break Dec 24 – Jan 4</span>
+    </div>
+  </div>
+
+  <!-- Welcome Message -->
+  <section class="section" style="background: var(--white);">
+    <div class="container">
+      <div class="welcome-grid">
+        <div class="welcome-img-wrap">
+          <div class="img-placeholder-content">
+            <div class="icon">👨‍💼</div>
+            <p>Principal's Photo</p>
+          </div>
+        </div>
+        <div>
+          <div class="gold-line"></div>
+          <span class="badge">Welcome Message</span>
+          <h2 class="section-title">A Word From Our Principal</h2>
+          <blockquote class="principal-quote">
+            "At Greenfield Academy, we believe every child carries within them the seed of greatness. Our mission is to cultivate that potential through disciplined learning, compassionate mentorship, and an environment that celebrates curiosity."
+          </blockquote>
+          <p class="principal-name">Dr. Arun Sharma</p>
+          <p style="color: var(--grey); font-size: 0.88rem;">Principal, Greenfield Academy · Ph.D. in Education, Delhi University</p>
+          <br>
+          <p style="color: var(--grey); line-height: 1.8;">We are proud of our legacy spanning four decades and remain committed to blending modern pedagogy with timeless values. Welcome to a community where excellence is not a goal — it is a way of life.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Announcements Cards -->
+  <section class="section">
+    <div class="container">
+      <div class="gold-line"></div>
+      <h2 class="section-title">Latest Announcements</h2>
+      <p class="section-subtitle">Stay up to date with events, notices and important dates. Data fetched from Google Sheets.</p>
+      <div id="announcementsLoading"><div class="spinner"></div></div>
+      <div class="ann-cards" id="announcementsGrid" style="display:none"></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============================= -->
+<!-- PAGE: ABOUT                   -->
+<!-- ============================= -->
+<div class="page" id="page-about">
+  <section class="section">
+    <div class="container">
+      <div class="gold-line"></div>
+      <h1 class="section-title">About Greenfield Academy</h1>
+      <p class="section-subtitle">Rooted in tradition, inspired by the future — a journey of 40 years of educational excellence.</p>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>Founded in 1985, Greenfield Academy has been a pillar of quality education in the region. Our CBSE-affiliated institution serves students from Class 1 through Class 12 across Science, Commerce, and Arts streams.</p>
+          <p>Our sprawling 15-acre campus features state-of-the-art laboratories, a digital library, sports complex, auditorium, and dedicated spaces for arts and extracurricular activities. We believe holistic education shapes not just scholars, but well-rounded individuals.</p>
+          <p>With a student-to-teacher ratio of 20:1, our experienced faculty ensures personalized attention and guidance for every learner. Our consistent board exam results and placement record speak to the dedication of our community.</p>
+          <div class="values-list">
+            <div class="value-card"><div class="value-icon">🎯</div><h4>Excellence</h4><p>Pursuit of academic and personal best</p></div>
+            <div class="value-card"><div class="value-icon">🤝</div><h4>Integrity</h4><p>Honesty in every action and word</p></div>
+            <div class="value-card"><div class="value-icon">💡</div><h4>Innovation</h4><p>Embracing new ideas and methods</p></div>
+            <div class="value-card"><div class="value-icon">🌍</div><h4>Community</h4><p>Building responsible global citizens</p></div>
+          </div>
+        </div>
+        <div>
+          <div class="stats-grid">
+            <div class="stat-box"><div class="num">2,400+</div><div class="lbl">Current Students</div></div>
+            <div class="stat-box"><div class="num">120+</div><div class="lbl">Teaching Staff</div></div>
+            <div class="stat-box"><div class="num">40+</div><div class="lbl">Years of Excellence</div></div>
+            <div class="stat-box"><div class="num">98%</div><div class="lbl">Board Pass Rate</div></div>
+          </div>
+          <br>
+          <div style="background:var(--white);border-radius:var(--radius);border:1px solid var(--border);padding:28px;margin-top:8px;">
+            <h3 style="font-size:1.05rem;font-weight:600;margin-bottom:16px;">Affiliations & Achievements</h3>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;">
+              <li style="font-size:0.9rem;color:var(--grey);">🏆 CBSE Board of Education – Affiliated Since 1985</li>
+              <li style="font-size:0.9rem;color:var(--grey);">🥇 National Science Olympiad – State Winners 2023</li>
+              <li style="font-size:0.9rem;color:var(--grey);">📚 Best School Award – District Education Board 2022</li>
+              <li style="font-size:0.9rem;color:var(--grey);">🎖️ ISO 9001:2015 Certified Institution</li>
+              <li style="font-size:0.9rem;color:var(--grey);">🌱 Green School Award – Ministry of Environment 2021</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============================= -->
+<!-- PAGE: FACULTY                 -->
+<!-- ============================= -->
+<div class="page" id="page-faculty">
+  <section class="section">
+    <div class="container">
+      <div class="gold-line"></div>
+      <h1 class="section-title">Our Faculty</h1>
+      <p class="section-subtitle">Meet our dedicated team of educators. Data dynamically fetched from Google Sheets.</p>
+      <div id="facultyLoading"><div class="spinner"></div></div>
+      <div class="faculty-grid" id="facultyGrid" style="display:none"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ============================= -->
+<!-- PAGE: CLASSES                 -->
+<!-- ============================= -->
+<div class="page" id="page-classes">
+  <section class="section">
+    <div class="container">
+      <div class="gold-line"></div>
+      <h1 class="section-title">Classes</h1>
+      <p class="section-subtitle">Explore our class structure from Grade 1 to Grade 12. Click any class for details.</p>
+      <div id="classesLoading"><div class="spinner"></div></div>
+      <div class="classes-grid" id="classesGrid" style="display:none"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ============================= -->
+<!-- PAGE: LOGIN                   -->
+<!-- ============================= -->
+<div class="page" id="page-login" style="display:none;">
+  <!-- Overrides flex from CSS when shown -->
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="icon">🔐</div>
+      <h2>Secure Login</h2>
+      <p>Staff & Admin Portal — Greenfield Academy</p>
+    </div>
+    <div class="demo-hint">
+      <strong>Demo Credentials:</strong><br>
+      Admin: <code>admin</code> / <code>admin123</code><br>
+      Teacher: <code>teacher</code> / <code>teacher123</code>
+    </div>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="loginUser" placeholder="Enter username" />
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()" />
+    </div>
+    <div id="loginError" class="error-msg"></div>
+    <br>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="doLogin()">Login →</button>
+    <div class="login-footer">
+      <a href="#" onclick="showPage('home');return false;">← Back to Homepage</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- PAGE: STUDENTS                -->
+<!-- ============================= -->
+<div class="page" id="page-students">
+  <div class="protected-header">
+    <div class="container">
+      <div class="gold-line"></div>
+      <h1>Students List</h1>
+      <p style="color:var(--grey);margin-top:6px;">🔒 Protected — Logged in as <strong id="studentUser"></strong></p>
+    </div>
+  </div>
+  <div class="section">
+    <div class="container">
+      <div class="search-bar">
+        <input type="text" id="studentSearch" placeholder="🔍 Search by name, roll no or class…" oninput="filterStudents()"/>
+        <button class="btn btn-navy" onclick="loadStudents()">↻ Refresh</button>
+      </div>
+      <div id="studentsLoading"><div class="spinner"></div></div>
+      <div id="studentsTableWrap" style="display:none">
+        <div class="data-table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Roll No</th><th>Name</th><th>Class</th><th>Section</th><th>Parent</th><th>Contact</th></tr></thead>
+            <tbody id="studentsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- PAGE: RESULTS                 -->
+<!-- ============================= -->
+<div class="page" id="page-results">
+  <div class="protected-header">
+    <div class="container">
+      <div class="gold-line"></div>
+      <h1>Examination Results</h1>
+      <p style="color:var(--grey);margin-top:6px;">🔒 Protected — Academic Performance Records</p>
+    </div>
+  </div>
+  <div class="section">
+    <div class="container">
+      <div class="search-bar">
+        <input type="text" id="resultSearch" placeholder="🔍 Search by name or roll no…" oninput="filterResults()"/>
+        <select id="resultClass" onchange="filterResults()" style="padding:11px 16px;border:2px solid var(--border);border-radius:10px;font-size:0.9rem;">
+          <option value="">All Classes</option>
+        </select>
+        <button class="btn btn-navy" onclick="loadResults()">↻ Refresh</button>
+      </div>
+      <div id="resultsLoading"><div class="spinner"></div></div>
+      <div id="resultsTableWrap" style="display:none">
+        <div class="data-table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Roll No</th><th>Name</th><th>Class</th><th>Marks</th><th>Total</th><th>%</th><th>Grade</th></tr></thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- PAGE: ADMISSIONS              -->
+<!-- ============================= -->
+<div class="page" id="page-admissions">
+  <div class="protected-header">
+    <div class="container">
+      <div class="gold-line"></div>
+      <h1>Admission Register</h1>
+      <p style="color:var(--grey);margin-top:6px;">🔒 Protected — New Student Admission Form</p>
+    </div>
+  </div>
+  <div class="section">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;">
+        <div class="admission-form-wrap">
+          <h3 style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:24px;">New Admission Form</h3>
+          <div class="form-row">
+            <div class="form-group"><label>Student Name *</label><input type="text" id="adm_name" placeholder="Full name"/></div>
+            <div class="form-group"><label>Date of Birth *</label><input type="date" id="adm_dob"/></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Applying for Class *</label>
+              <select id="adm_class">
+                <option value="">Select class</option>
+                <option>Class 1</option><option>Class 2</option><option>Class 3</option>
+                <option>Class 4</option><option>Class 5</option><option>Class 6</option>
+                <option>Class 7</option><option>Class 8</option><option>Class 9</option>
+                <option>Class 10</option><option>Class 11</option><option>Class 12</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Gender</label>
+              <select id="adm_gender">
+                <option value="">Select</option>
+                <option>Male</option><option>Female</option><option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Father's Name *</label><input type="text" id="adm_father" placeholder="Father's full name"/></div>
+            <div class="form-group"><label>Mother's Name</label><input type="text" id="adm_mother" placeholder="Mother's full name"/></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Phone Number *</label><input type="tel" id="adm_phone" placeholder="+91 XXXXXXXXXX"/></div>
+            <div class="form-group"><label>Email</label><input type="email" id="adm_email" placeholder="parent@email.com"/></div>
+          </div>
+          <div class="form-group"><label>Address</label><textarea id="adm_address" placeholder="Full residential address" rows="2"></textarea></div>
+          <div class="form-group"><label>Previous School</label><input type="text" id="adm_prev" placeholder="Name of previous school (if any)"/></div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;" onclick="submitAdmission()">Submit Application →</button>
+          <div id="admissionResult"></div>
+        </div>
+        <div>
+          <div class="sheet-setup" style="margin-top:0;">
+            <h3>📋 Admission Register</h3>
+            <p>Recent admissions submitted through this form. Data is stored in your Google Sheet via Apps Script.</p>
+            <div id="admissionsLoading"><div class="spinner"></div></div>
+            <div id="admissionsTableWrap" style="display:none">
+              <div class="data-table-wrap">
+                <table>
+                  <thead><tr><th>#</th><th>Name</th><th>Class</th><th>DOB</th><th>Phone</th></tr></thead>
+                  <tbody id="admissionsBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- PAGE: GALLERY                 -->
+<!-- ============================= -->
+<div class="page" id="page-gallery">
+  <section class="section">
+    <div class="container">
+      <div class="gold-line"></div>
+      <h1 class="section-title">Gallery</h1>
+      <p class="section-subtitle">Memories from our events, sports, cultural programs, and campus life.</p>
+      <div class="gallery-grid">
+        <div class="gallery-item">🏆</div>
+        <div class="gallery-item">🎭</div>
+        <div class="gallery-item">⚽</div>
+        <div class="gallery-item">🔬</div>
+        <div class="gallery-item">🎨</div>
+        <div class="gallery-item">📚</div>
+        <div class="gallery-item">🏊</div>
+        <div class="gallery-item">🎵</div>
+        <div class="gallery-item">🌱</div>
+        <div class="gallery-item">💻</div>
+        <div class="gallery-item">🏅</div>
+        <div class="gallery-item">🎓</div>
+      </div>
+      <p style="text-align:center;color:var(--grey);margin-top:24px;font-size:0.9rem;">Replace placeholders with actual images from your Google Drive or CDN.</p>
+    </div>
+  </section>
+</div>
+
+<!-- ============================= -->
+<!-- PAGE: CONTACT                 -->
+<!-- ============================= -->
+<div class="page" id="page-contact">
+  <section class="section">
+    <div class="container">
+      <div class="gold-line"></div>
+      <h1 class="section-title">Contact Us</h1>
+      <p class="section-subtitle">Reach out for admissions, queries, or partnerships. We'd love to hear from you.</p>
+      <div class="contact-grid">
+        <div class="contact-info-card">
+          <h3>Get In Touch</h3>
+          <div class="contact-item">
+            <div class="icon">📍</div>
+            <div class="text"><strong>Address</strong>14 Greenfield Road, Sector 22, New Delhi – 110 001</div>
+          </div>
+          <div class="contact-item">
+            <div class="icon">📞</div>
+            <div class="text"><strong>Phone</strong>+91 11 2345 6789 (Office)<br>+91 98765 43210 (Admissions)</div>
+          </div>
+          <div class="contact-item">
+            <div class="icon">✉️</div>
+            <div class="text"><strong>Email</strong>info@greenfieldacademy.edu<br>admissions@greenfieldacademy.edu</div>
+          </div>
+          <div class="contact-item">
+            <div class="icon">🕐</div>
+            <div class="text"><strong>Office Hours</strong>Mon – Fri: 8:00 AM – 4:00 PM<br>Saturday: 8:00 AM – 1:00 PM</div>
+          </div>
+        </div>
+        <div class="contact-form-wrap">
+          <h3 style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:24px;">Send a Message</h3>
+          <div class="form-row">
+            <div class="form-group"><label>Your Name</label><input type="text" id="cnt_name" placeholder="Full name"/></div>
+            <div class="form-group"><label>Email</label><input type="email" id="cnt_email" placeholder="your@email.com"/></div>
+          </div>
+          <div class="form-group"><label>Subject</label><input type="text" id="cnt_subject" placeholder="What is this about?"/></div>
+          <div class="form-group"><label>Message</label><textarea id="cnt_msg" rows="5" placeholder="Write your message here…"></textarea></div>
+          <button class="btn btn-primary" onclick="submitContact()" style="width:100%;justify-content:center;">Send Message →</button>
+          <div id="contactResult"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============================= -->
+<!-- PAGE: ADMIN                   -->
+<!-- ============================= -->
+<div class="page" id="page-admin">
+  <section class="section">
+    <div class="container">
+      <div class="gold-line"></div>
+      <h1 class="section-title">Admin Dashboard</h1>
+      <p class="section-subtitle">Configure Google Sheets, monitor activity, and manage site data.</p>
+
+      <div class="admin-grid" id="adminStats">
+        <div class="admin-stat"><div class="icon">👥</div><div class="info"><div class="num" id="aStu">—</div><div class="lbl">Total Students</div></div></div>
+        <div class="admin-stat"><div class="icon">👩‍🏫</div><div class="info"><div class="num" id="aFac">—</div><div class="lbl">Faculty Members</div></div></div>
+        <div class="admin-stat"><div class="icon">📝</div><div class="info"><div class="num" id="aAdm">—</div><div class="lbl">Admissions</div></div></div>
+        <div class="admin-stat"><div class="icon">📢</div><div class="info"><div class="num" id="aAnn">—</div><div class="lbl">Announcements</div></div></div>
+      </div>
+
+      <!-- GOOGLE SHEETS CONFIG -->
+      <div class="sheet-setup">
+        <h3>⚙️ Google Sheets Configuration</h3>
+        <p>Enter your published Google Sheet CSV URLs below. Each sheet tab should be published as CSV from <strong>File → Share → Publish to web → CSV</strong>.</p>
+        <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:6px;">Students Sheet CSV URL</label>
+        <input type="text" id="cfg_students" placeholder="https://docs.google.com/spreadsheets/d/SHEET_ID/pub?gid=0&single=true&output=csv"/>
+        <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:6px;">Faculty Sheet CSV URL</label>
+        <input type="text" id="cfg_faculty" placeholder="https://docs.google.com/spreadsheets/d/SHEET_ID/pub?gid=FACULTY_GID&single=true&output=csv"/>
+        <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:6px;">Announcements Sheet CSV URL</label>
+        <input type="text" id="cfg_announcements" placeholder="https://docs.google.com/spreadsheets/d/SHEET_ID/pub?gid=ANN_GID&single=true&output=csv"/>
+        <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:6px;">Results Sheet CSV URL</label>
+        <input type="text" id="cfg_results" placeholder="https://docs.google.com/spreadsheets/d/SHEET_ID/pub?gid=RES_GID&single=true&output=csv"/>
+        <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:6px;">Apps Script Web App URL (for form submissions)</label>
+        <input type="text" id="cfg_appsscript" placeholder="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec"/>
+        <button class="btn btn-primary" onclick="saveConfig()" style="margin-top:4px;">💾 Save Configuration</button>
+        <div class="config-status" id="cfgStatus"></div>
+      </div>
+
+      <!-- APPS SCRIPT CODE -->
+      <div class="sheet-setup">
+        <h3>📜 Google Apps Script — Copy & Deploy</h3>
+        <p>Go to <strong>extensions.google.com → Apps Script</strong> in your Google Sheet and paste this code. Then deploy as a Web App with access set to <em>Anyone</em>.</p>
+        <pre>// ===== GREENFIELD ACADEMY - GOOGLE APPS SCRIPT =====
+// Paste this in Google Apps Script and deploy as Web App
+
+const SHEET_ID = 'YOUR_SPREADSHEET_ID'; // Replace with your Sheet ID
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const sheetName = data.sheet || 'Admissions';
+    const sheet = ss.getSheetByName(sheetName);
+    
+    if (!sheet) {
+      return ContentService.createTextOutput(
+        JSON.stringify({ status: 'error', msg: 'Sheet not found' })
+      ).setMimeType(ContentService.MimeType.JSON);
+    }
+    
+    // Append row based on sheet type
+    if (sheetName === 'Admissions') {
+      sheet.appendRow([
+        new Date().toLocaleDateString(),
+        data.name, data.dob, data.class,
+        data.gender, data.father, data.mother,
+        data.phone, data.email, data.address,
+        data.prevSchool, 'Pending'
+      ]);
+    } else if (sheetName === 'Contact') {
+      sheet.appendRow([
+        new Date().toLocaleString(),
+        data.name, data.email,
+        data.subject, data.message
+      ]);
+    }
+    
+    return ContentService.createTextOutput(
+      JSON.stringify({ status: 'success', msg: 'Data saved!' })
+    ).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch(err) {
+    return ContentService.createTextOutput(
+      JSON.stringify({ status: 'error', msg: err.toString() })
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  // Health check endpoint
+  return ContentService.createTextOutput(
+    JSON.stringify({ status: 'ok', service: 'Greenfield Academy API' })
+  ).setMimeType(ContentService.MimeType.JSON);
+}</pre>
+      </div>
+
+      <!-- SHEET STRUCTURE GUIDE -->
+      <div class="sheet-setup">
+        <h3>📊 Required Google Sheet Structure</h3>
+        <p>Create a Google Sheet with these tabs and column headers exactly as shown:</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:12px;">
+          <div style="background:var(--light-grey);border-radius:10px;padding:16px;">
+            <strong style="font-size:0.9rem;">📋 Students Tab</strong>
+            <p style="font-size:0.78rem;color:var(--grey);margin-top:6px;">RollNo | Name | Class | Section | ParentName | Phone</p>
+          </div>
+          <div style="background:var(--light-grey);border-radius:10px;padding:16px;">
+            <strong style="font-size:0.9rem;">📊 Results Tab</strong>
+            <p style="font-size:0.78rem;color:var(--grey);margin-top:6px;">RollNo | Name | Class | Marks | Total | Subject</p>
+          </div>
+          <div style="background:var(--light-grey);border-radius:10px;padding:16px;">
+            <strong style="font-size:0.9rem;">👩‍🏫 Faculty Tab</strong>
+            <p style="font-size:0.78rem;color:var(--grey);margin-top:6px;">Name | Subject | Qualification | PhotoURL | Bio</p>
+          </div>
+          <div style="background:var(--light-grey);border-radius:10px;padding:16px;">
+            <strong style="font-size:0.9rem;">📢 Announcements Tab</strong>
+            <p style="font-size:0.78rem;color:var(--grey);margin-top:6px;">Title | Description | Date | Category</p>
+          </div>
+          <div style="background:var(--light-grey);border-radius:10px;padding:16px;">
+            <strong style="font-size:0.9rem;">📝 Admissions Tab</strong>
+            <p style="font-size:0.78rem;color:var(--grey);margin-top:6px;">Date | Name | DOB | Class | Gender | Father | Mother | Phone | Email | Address | PrevSchool | Status</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo"><span style="font-size:1.4rem;">🏫</span> Greenfield Academy</div>
+        <p>Shaping futures through education, character, and community since 1985. CBSE Affiliated · Classes 1–12.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#" onclick="showPage('home')">Home</a></li>
+          <li><a href="#" onclick="showPage('about')">About Us</a></li>
+          <li><a href="#" onclick="showPage('faculty')">Faculty</a></li>
+          <li><a href="#" onclick="showPage('classes')">Classes</a></li>
+          <li><a href="#" onclick="showPage('gallery')">Gallery</a></li>
+          <li><a href="#" onclick="showPage('contact')">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Portals</h4>
+        <ul>
+          <li><a href="#" onclick="requireLogin('students')">Student Login</a></li>
+          <li><a href="#" onclick="requireLogin('results')">Results Portal</a></li>
+          <li><a href="#" onclick="requireLogin('admissions')">Admissions</a></li>
+          <li><a href="#" onclick="requireLogin('admin')">Admin Panel</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Greenfield Academy. All rights reserved.</span>
+      <span>Built with ❤️ · <a href="#">Privacy Policy</a> · <a href="#">Terms of Use</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================= -->
+<!-- JAVASCRIPT                    -->
+<!-- ============================= -->
+<script>
+/* =============================================
+   CONFIGURATION
+   Replace these with your actual Google Sheets URLs
+   after publishing each tab as CSV from:
+   File → Share → Publish to web → CSV format
+============================================= */
+let CONFIG = {
+  students:      localStorage.getItem('cfg_students')      || '',
+  faculty:       localStorage.getItem('cfg_faculty')       || '',
+  announcements: localStorage.getItem('cfg_announcements') || '',
+  results:       localStorage.getItem('cfg_results')       || '',
+  appsScript:    localStorage.getItem('cfg_appsscript')    || '',
+};
+
+// =============================================
+// DEMO DATA (shown when no Sheets URLs configured)
+// =============================================
+const DEMO = {
+  students: [
+    {RollNo:'101',Name:'Aarav Sharma',Class:'10',Section:'A',ParentName:'Raj Sharma',Phone:'9876543210'},
+    {RollNo:'102',Name:'Priya Patel',Class:'10',Section:'B',ParentName:'Suresh Patel',Phone:'9876543211'},
+    {RollNo:'103',Name:'Rohan Gupta',Class:'9',Section:'A',ParentName:'Amit Gupta',Phone:'9876543212'},
+    {RollNo:'104',Name:'Anjali Singh',Class:'11',Section:'A',ParentName:'Vijay Singh',Phone:'9876543213'},
+    {RollNo:'105',Name:'Karan Mehta',Class:'8',Section:'C',ParentName:'Sunil Mehta',Phone:'9876543214'},
+    {RollNo:'106',Name:'Sneha Reddy',Class:'12',Section:'A',ParentName:'Ravi Reddy',Phone:'9876543215'},
+    {RollNo:'107',Name:'Dev Joshi',Class:'7',Section:'B',ParentName:'Rajesh Joshi',Phone:'9876543216'},
+    {RollNo:'108',Name:'Meera Nair',Class:'6',Section:'A',ParentName:'Prakash Nair',Phone:'9876543217'},
+  ],
+  faculty: [
+    {Name:'Dr. Sunita Verma',Subject:'Mathematics',Qualification:'Ph.D. Mathematics',PhotoURL:'',Bio:'20 years experience'},
+    {Name:'Mr. Arjun Kapoor',Subject:'Physics',Qualification:'M.Sc. Physics',PhotoURL:'',Bio:'Expert in IIT-JEE coaching'},
+    {Name:'Ms. Kavita Rao',Subject:'English',Qualification:'M.A. English Literature',PhotoURL:'',Bio:'Published author'},
+    {Name:'Mr. Harish Tiwari',Subject:'Chemistry',Qualification:'M.Sc. Chemistry',PhotoURL:'',Bio:'15 years in teaching'},
+    {Name:'Mrs. Deepa Malhotra',Subject:'Biology',Qualification:'M.Sc. Botany',PhotoURL:'',Bio:'Research scientist'},
+    {Name:'Mr. Sanjay Mishra',Subject:'History',Qualification:'M.A. History',PhotoURL:'',Bio:'Author of 3 textbooks'},
+    {Name:'Ms. Pooja Sharma',Subject:'Computer Science',Qualification:'M.Tech CSE',PhotoURL:'',Bio:'Full-stack developer'},
+    {Name:'Mr. Vikram Bose',Subject:'Physical Education',Qualification:'B.P.Ed, M.P.Ed',PhotoURL:'',Bio:'National-level athlete'},
+  ],
+  announcements: [
+    {Title:'Annual Sports Day',Description:'Annual Sports Day will be held on December 15. All students must participate.',Date:'Dec 1, 2025',Category:'Event'},
+    {Title:'Pre-Board Examinations',Description:'Class 10 & 12 pre-boards begin January 6. Admit cards available from Dec 20.',Date:'Nov 28, 2025',Category:'Exam'},
+    {Title:'Mid-Term Results',Description:'Mid-term results have been declared. Students can check their scorecards in the portal.',Date:'Nov 20, 2025',Category:'Result'},
+    {Title:'Winter Break Notice',Description:'School will remain closed from Dec 24 to Jan 4. Classes resume on January 5.',Date:'Nov 15, 2025',Category:'Holiday'},
+    {Title:'Science Exhibition',Description:'Annual Inter-school Science Exhibition on Nov 30. Register before Nov 25.',Date:'Nov 10, 2025',Category:'Event'},
+    {Title:'Parent-Teacher Meeting',Description:'PTM scheduled for December 8, 10 AM – 2 PM. Attendance is mandatory.',Date:'Nov 8, 2025',Category:'Meeting'},
+  ],
+  results: [
+    {RollNo:'101',Name:'Aarav Sharma',Class:'10',Marks:'92',Total:'100'},
+    {RollNo:'102',Name:'Priya Patel',Class:'10',Marks:'87',Total:'100'},
+    {RollNo:'103',Name:'Rohan Gupta',Class:'9',Marks:'78',Total:'100'},
+    {RollNo:'104',Name:'Anjali Singh',Class:'11',Marks:'95',Total:'100'},
+    {RollNo:'105',Name:'Karan Mehta',Class:'8',Marks:'65',Total:'100'},
+    {RollNo:'106',Name:'Sneha Reddy',Class:'12',Marks:'88',Total:'100'},
+    {RollNo:'107',Name:'Dev Joshi',Class:'7',Marks:'72',Total:'100'},
+    {RollNo:'108',Name:'Meera Nair',Class:'6',Marks:'55',Total:'100'},
+  ],
+  admissions: [
+    {Name:'Ananya Sharma',Class:'Class 1',DOB:'2019-05-10',Phone:'9876543220'},
+    {Name:'Ritik Patel',Class:'Class 6',DOB:'2013-08-22',Phone:'9876543221'},
+    {Name:'Lata Rao',Class:'Class 9',DOB:'2010-01-15',Phone:'9876543222'},
+  ],
+  classes: [
+    {num:'1',students:'82',sections:'2'},
+    {num:'2',students:'90',sections:'2'},
+    {num:'3',students:'88',sections:'2'},
+    {num:'4',students:'86',sections:'2'},
+    {num:'5',students:'92',sections:'3'},
+    {num:'6',students:'95',sections:'3'},
+    {num:'7',students:'100',sections:'3'},
+    {num:'8',students:'98',sections:'3'},
+    {num:'9',students:'105',sections:'3'},
+    {num:'10',students:'110',sections:'3'},
+    {num:'11',students:'88',sections:'2'},
+    {num:'12',students:'78',sections:'2'},
+  ]
+};
+
+// =============================================
+// AUTH — Simple JS Auth (replace with Firebase)
+// =============================================
+const USERS = {
+  admin:   { pass: 'admin123',   role: 'Admin',   pages: ['students','results','admissions','admin'] },
+  teacher: { pass: 'teacher123', role: 'Teacher', pages: ['students','results'] },
+};
+
+let currentUser = null;
+
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value.trim();
+  const err = document.getElementById('loginError');
+  err.textContent = '';
+  if (!u || !p) { err.textContent = 'Please enter username and password.'; return; }
+  if (USERS[u] && USERS[u].pass === p) {
+    currentUser = { username: u, role: USERS[u].role, pages: USERS[u].pages };
+    document.getElementById('loginBtn').classList.add('hidden');
+    document.getElementById('logoutBtn').classList.remove('hidden');
+    if (currentUser.role === 'Admin') {
+      document.querySelector('[data-page="students"]').closest('li').innerHTML +=
+        ''; // already there
+    }
+    const pending = sessionStorage.getItem('pendingPage');
+    sessionStorage.removeItem('pendingPage');
+    showPage(pending || 'home');
+    showToast(`Welcome back, ${currentUser.role}!`, 'success');
+  } else {
+    err.textContent = 'Invalid username or password. Try admin/admin123.';
+  }
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('loginBtn').classList.remove('hidden');
+  document.getElementById('logoutBtn').classList.add('hidden');
+  showPage('home');
+  showToast('Logged out successfully.');
+}
+
+function requireLogin(page) {
+  if (!currentUser) {
+    sessionStorage.setItem('pendingPage', page);
+    showPage('login');
+    showToast('Please login to access this page.');
+    return;
+  }
+  showPage(page);
+}
+
+// =============================================
+// PAGE ROUTER
+// =============================================
+function showPage(name) {
+  // Protected check
+  const protectedPages = ['students','results','admissions','admin'];
+  if (protectedPages.includes(name) && !currentUser) {
+    sessionStorage.setItem('pendingPage', name);
+    showPage('login');
+    return;
+  }
+
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + name);
+  if (!target) return;
+  target.classList.add('active');
+
+  // Special login page styling
+  if (name === 'login') {
+    target.style.display = 'flex';
+  } else {
+    target.style.display = '';
+  }
+
+  // Nav highlight
+  document.querySelectorAll('[data-page]').forEach(a => {
+    a.classList.toggle('active', a.dataset.page === name);
+  });
+
+  // Lazy load
+  if (name === 'home') loadAnnouncements();
+  if (name === 'faculty') loadFaculty();
+  if (name === 'classes') loadClasses();
+  if (name === 'students') loadStudents();
+  if (name === 'results') loadResults();
+  if (name === 'admissions') loadAdmissions();
+  if (name === 'admin') initAdmin();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// =============================================
+// CSV PARSER
+// =============================================
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+  return lines.slice(1).map(line => {
+    // Handle quoted fields
+    const vals = [];
+    let inQ = false, cur = '';
+    for (const ch of line) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { vals.push(cur.trim()); cur = ''; }
+      else cur += ch;
+    }
+    vals.push(cur.trim());
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = (vals[i] || '').replace(/^"|"$/g,''));
+    return obj;
+  });
+}
+
+async function fetchSheet(url) {
+  if (!url) return null;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Network error');
+    const text = await res.text();
+    return parseCSV(text);
+  } catch {
+    return null;
+  }
+}
+
+// =============================================
+// ANNOUNCEMENTS
+// =============================================
+let annData = [];
+async function loadAnnouncements() {
+  document.getElementById('announcementsLoading').style.display = 'block';
+  document.getElementById('announcementsGrid').style.display = 'none';
+  let data = await fetchSheet(CONFIG.announcements);
+  annData = data || DEMO.announcements;
+  renderAnnouncements(annData);
+}
+function renderAnnouncements(data) {
+  const grid = document.getElementById('announcementsGrid');
+  grid.innerHTML = data.map(a => `
+    <div class="ann-card">
+      <span class="ann-card-tag">${a.Category || 'Notice'}</span>
+      <h3>${a.Title || ''}</h3>
+      <p>${a.Description || ''}</p>
+      <div class="ann-card-date">📅 ${a.Date || ''}</div>
+    </div>`).join('');
+  document.getElementById('announcementsLoading').style.display = 'none';
+  grid.style.display = 'grid';
+}
+
+// =============================================
+// FACULTY
+// =============================================
+async function loadFaculty() {
+  document.getElementById('facultyLoading').style.display = 'block';
+  document.getElementById('facultyGrid').style.display = 'none';
+  let data = await fetchSheet(CONFIG.faculty);
+  const faculty = data || DEMO.faculty;
+  const grid = document.getElementById('facultyGrid');
+  grid.innerHTML = faculty.map((f, i) => {
+    const initials = (f.Name || 'T').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+    const imgHtml = f.PhotoURL
+      ? `<img src="${f.PhotoURL}" alt="${f.Name}" onerror="this.style.display='none'">`
+      : `<span style="font-size:2rem;font-weight:700;color:var(--navy);">${initials}</span>`;
+    return `<div class="faculty-card">
+      <div class="faculty-img">${imgHtml}</div>
+      <div class="faculty-body">
+        <h3>${f.Name||''}</h3>
+        <p>${f.Qualification||''}</p>
+        <span class="subject-badge">${f.Subject||''}</span>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('facultyLoading').style.display = 'none';
+  grid.style.display = 'grid';
+}
+
+// =============================================
+// CLASSES
+// =============================================
+async function loadClasses() {
+  document.getElementById('classesLoading').style.display = 'block';
+  document.getElementById('classesGrid').style.display = 'none';
+  const classes = DEMO.classes;
+  const grid = document.getElementById('classesGrid');
+  grid.innerHTML = classes.map(c => `
+    <div class="class-card" onclick="requireLogin('students')">
+      <div class="class-num">${c.num}</div>
+      <div class="class-label">Grade ${c.num}</div>
+      <div class="class-count">👥 ${c.students} students · ${c.sections} sections</div>
+    </div>`).join('');
+  document.getElementById('classesLoading').style.display = 'none';
+  grid.style.display = 'grid';
+}
+
+// =============================================
+// STUDENTS
+// =============================================
+let allStudents = [];
+async function loadStudents() {
+  document.getElementById('studentUser').textContent = currentUser?.username || '';
+  document.getElementById('studentsLoading').style.display = 'block';
+  document.getElementById('studentsTableWrap').style.display = 'none';
+  let data = await fetchSheet(CONFIG.students);
+  allStudents = data || DEMO.students;
+  renderStudents(allStudents);
+}
+function renderStudents(data) {
+  const tbody = document.getElementById('studentsBody');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="no-data"><div class="icon">👥</div><p>No students found.</p></div></td></tr>`;
+  } else {
+    tbody.innerHTML = data.map((s, i) => `
+      <tr>
+        <td>${i+1}</td>
+        <td><strong>${s.RollNo||''}</strong></td>
+        <td>${s.Name||''}</td>
+        <td>Class ${s.Class||''}</td>
+        <td>${s.Section||''}</td>
+        <td>${s.ParentName||''}</td>
+        <td>${s.Phone||''}</td>
+      </tr>`).join('');
+  }
+  document.getElementById('studentsLoading').style.display = 'none';
+  document.getElementById('studentsTableWrap').style.display = 'block';
+}
+function filterStudents() {
+  const q = document.getElementById('studentSearch').value.toLowerCase();
+  renderStudents(allStudents.filter(s =>
+    Object.values(s).some(v => v.toLowerCase().includes(q))
+  ));
+}
+
+// =============================================
+// RESULTS
+// =============================================
+let allResults = [];
+async function loadResults() {
+  document.getElementById('resultsLoading').style.display = 'block';
+  document.getElementById('resultsTableWrap').style.display = 'none';
+  let data = await fetchSheet(CONFIG.results);
+  allResults = data || DEMO.results;
+  // Populate class filter
+  const sel = document.getElementById('resultClass');
+  const classes = [...new Set(allResults.map(r => r.Class).filter(Boolean))].sort((a,b) => +a - +b);
+  sel.innerHTML = '<option value="">All Classes</option>' + classes.map(c => `<option>${c}</option>`).join('');
+  renderResults(allResults);
+}
+function getGrade(pct) {
+  if (pct >= 90) return ['A+','rank-a'];
+  if (pct >= 75) return ['A','rank-a'];
+  if (pct >= 60) return ['B','rank-b'];
+  if (pct >= 40) return ['C','rank-c'];
+  return ['F','rank-f'];
+}
+function renderResults(data) {
+  const tbody = document.getElementById('resultsBody');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="no-data"><div class="icon">📊</div><p>No results found.</p></div></td></tr>`;
+  } else {
+    tbody.innerHTML = data.map((r, i) => {
+      const marks = parseFloat(r.Marks) || 0;
+      const total = parseFloat(r.Total) || 100;
+      const pct = Math.round((marks / total) * 100);
+      const [grade, cls] = getGrade(pct);
+      return `<tr>
+        <td>${i+1}</td>
+        <td><strong>${r.RollNo||''}</strong></td>
+        <td>${r.Name||''}</td>
+        <td>Class ${r.Class||''}</td>
+        <td>${marks}</td>
+        <td>${total}</td>
+        <td>${pct}%</td>
+        <td><span class="rank-badge ${cls}">${grade}</span></td>
+      </tr>`;
+    }).join('');
+  }
+  document.getElementById('resultsLoading').style.display = 'none';
+  document.getElementById('resultsTableWrap').style.display = 'block';
+}
+function filterResults() {
+  const q = document.getElementById('resultSearch').value.toLowerCase();
+  const cls = document.getElementById('resultClass').value;
+  renderResults(allResults.filter(r =>
+    (!q || Object.values(r).some(v => v.toLowerCase().includes(q))) &&
+    (!cls || r.Class === cls)
+  ));
+}
+
+// =============================================
+// ADMISSIONS
+// =============================================
+async function loadAdmissions() {
+  document.getElementById('admissionsLoading').style.display = 'block';
+  document.getElementById('admissionsTableWrap').style.display = 'none';
+  // Show demo admissions register
+  const data = DEMO.admissions;
+  const tbody = document.getElementById('admissionsBody');
+  tbody.innerHTML = data.map((a, i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${a.Name}</td>
+      <td>${a.Class}</td>
+      <td>${a.DOB}</td>
+      <td>${a.Phone}</td>
+    </tr>`).join('');
+  document.getElementById('admissionsLoading').style.display = 'none';
+  document.getElementById('admissionsTableWrap').style.display = 'block';
+}
+
+async function submitAdmission() {
+  const name    = document.getElementById('adm_name').value.trim();
+  const dob     = document.getElementById('adm_dob').value;
+  const cls     = document.getElementById('adm_class').value;
+  const gender  = document.getElementById('adm_gender').value;
+  const father  = document.getElementById('adm_father').value.trim();
+  const mother  = document.getElementById('adm_mother').value.trim();
+  const phone   = document.getElementById('adm_phone').value.trim();
+  const email   = document.getElementById('adm_email').value.trim();
+  const address = document.getElementById('adm_address').value.trim();
+  const prev    = document.getElementById('adm_prev').value.trim();
+  const result  = document.getElementById('admissionResult');
+
+  if (!name || !dob || !cls || !father || !phone) {
+    result.innerHTML = '<div class="submit-result error">⚠️ Please fill all required fields marked with *.</div>';
+    return;
+  }
+
+  const payload = { sheet: 'Admissions', name, dob, class: cls, gender, father, mother, phone, email, address, prevSchool: prev };
+
+  result.innerHTML = '<div class="submit-result">⏳ Submitting…</div>';
+
+  if (CONFIG.appsScript) {
+    try {
+      const res = await fetch(CONFIG.appsScript, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        result.innerHTML = '<div class="submit-result success">✅ Application submitted successfully! We will contact you shortly.</div>';
+        showToast('Admission submitted!', 'success');
+        // Reset form
+        ['adm_name','adm_dob','adm_class','adm_gender','adm_father','adm_mother','adm_phone','adm_email','adm_address','adm_prev'].forEach(id => {
+          document.getElementById(id).value = '';
+        });
+      } else {
+        result.innerHTML = `<div class="submit-result error">❌ Error: ${data.msg}</div>`;
+      }
+    } catch (e) {
+      result.innerHTML = '<div class="submit-result error">❌ Could not connect to server. Check your Apps Script URL.</div>';
+    }
+  } else {
+    // Demo mode - simulate success
+    setTimeout(() => {
+      result.innerHTML = '<div class="submit-result success">✅ [Demo] Application saved! Configure Apps Script URL in Admin panel to save to Google Sheets.</div>';
+      showToast('Demo: Application submitted!', 'success');
+    }, 800);
+  }
+}
+
+// =============================================
+// CONTACT FORM
+// =============================================
+async function submitContact() {
+  const name    = document.getElementById('cnt_name').value.trim();
+  const email   = document.getElementById('cnt_email').value.trim();
+  const subject = document.getElementById('cnt_subject').value.trim();
+  const msg     = document.getElementById('cnt_msg').value.trim();
+  const result  = document.getElementById('contactResult');
+
+  if (!name || !msg) {
+    result.innerHTML = '<div class="submit-result error" style="margin-top:12px;">⚠️ Please fill name and message.</div>';
+    return;
+  }
+
+  const payload = { sheet: 'Contact', name, email, subject, message: msg };
+  result.innerHTML = '<div class="submit-result" style="margin-top:12px;">⏳ Sending…</div>';
+
+  if (CONFIG.appsScript) {
+    try {
+      const res = await fetch(CONFIG.appsScript, { method: 'POST', body: JSON.stringify(payload) });
+      const data = await res.json();
+      result.innerHTML = data.status === 'success'
+        ? '<div class="submit-result success" style="margin-top:12px;">✅ Message sent! We\'ll get back to you soon.</div>'
+        : `<div class="submit-result error" style="margin-top:12px;">❌ ${data.msg}</div>`;
+    } catch {
+      result.innerHTML = '<div class="submit-result error" style="margin-top:12px;">❌ Could not send. Check Apps Script URL.</div>';
+    }
+  } else {
+    setTimeout(() => {
+      result.innerHTML = '<div class="submit-result success" style="margin-top:12px;">✅ [Demo] Message received! Configure Apps Script URL in Admin panel to enable actual delivery.</div>';
+      showToast('Message sent (demo mode)!', 'success');
+    }, 600);
+  }
+}
+
+// =============================================
+// ADMIN DASHBOARD
+// =============================================
+function initAdmin() {
+  // Fill config fields
+  document.getElementById('cfg_students').value      = CONFIG.students      || '';
+  document.getElementById('cfg_faculty').value       = CONFIG.faculty       || '';
+  document.getElementById('cfg_announcements').value = CONFIG.announcements || '';
+  document.getElementById('cfg_results').value       = CONFIG.results       || '';
+  document.getElementById('cfg_appsscript').value    = CONFIG.appsScript    || '';
+
+  // Show stats
+  document.getElementById('aStu').textContent = DEMO.students.length;
+  document.getElementById('aFac').textContent = DEMO.faculty.length;
+  document.getElementById('aAdm').textContent = DEMO.admissions.length;
+  document.getElementById('aAnn').textContent = DEMO.announcements.length;
+
+  updateCfgStatus();
+}
+function saveConfig() {
+  CONFIG.students      = document.getElementById('cfg_students').value.trim();
+  CONFIG.faculty       = document.getElementById('cfg_faculty').value.trim();
+  CONFIG.announcements = document.getElementById('cfg_announcements').value.trim();
+  CONFIG.results       = document.getElementById('cfg_results').value.trim();
+  CONFIG.appsScript    = document.getElementById('cfg_appsscript').value.trim();
+  localStorage.setItem('cfg_students',      CONFIG.students);
+  localStorage.setItem('cfg_faculty',       CONFIG.faculty);
+  localStorage.setItem('cfg_announcements', CONFIG.announcements);
+  localStorage.setItem('cfg_results',       CONFIG.results);
+  localStorage.setItem('cfg_appsscript',    CONFIG.appsScript);
+  showToast('Configuration saved!', 'success');
+  updateCfgStatus();
+}
+function updateCfgStatus() {
+  const configured = [CONFIG.students, CONFIG.faculty, CONFIG.announcements, CONFIG.results].filter(Boolean).length;
+  const s = document.getElementById('cfgStatus');
+  if (configured === 4) {
+    s.innerHTML = '<span class="dot connected"></span> All sheets connected (4/4)';
+  } else if (configured > 0) {
+    s.innerHTML = `<span class="dot" style="background:#f59e0b;"></span> ${configured}/4 sheets configured`;
+  } else {
+    s.innerHTML = '<span class="dot disconnected"></span> No sheets configured — using demo data';
+  }
+}
+
+// =============================================
+// TOAST
+// =============================================
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+}
+
+// =============================================
+// NAVBAR SCROLL
+// =============================================
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// =============================================
+// MOBILE MENU
+// =============================================
+function toggleMobile() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMobile() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+// =============================================
+// INIT
+// =============================================
+loadAnnouncements();
+updateCfgStatus();
+</script>
+</body>
+</html>
